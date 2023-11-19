@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 int main(int argc, char **argv){
     printf("%d", ParseArgs(argv, argc));
@@ -17,7 +18,14 @@ int ParseArgs(char **arguments, int argumentCount) {
       return 0;
     }
     else if (strcmp("--test", arguments[i]) == 0){
-        return 1;
+        if(++i>=argumentCount){
+          fprintf(stderr, "Not enough arguments\n");
+          return 0;
+        }
+        if(MazeTest(arguments[i]))
+          printf("Valid\n");
+        else
+          printf("Invalid\n");
     }
     else if(strcmp("--lpath", arguments[i]) == 0){
       if(i+2>=argumentCount)
@@ -43,4 +51,33 @@ void PrintHelp(){
   printf("--test will check any file for a valid maze definition, return Valid or Invalid\n");
   printf("--rpath R C needs two arguments R, and C, which will be the coordinates for the entry point into the maze, --rpath then looks for an exit using the right hand rule\n");
   printf("--lpath R C needs two arguments R, and C, which will be the coordinates for the entry point into the maze, --lpath then looks for an exit using the left hand rule\n");
+}
+
+bool MazeTest(char *arg){
+  printf("File is: %s\n", arg);
+  FILE *file;
+  file = fopen(arg, "r");
+  int rows = 0, colls = 0;
+  char tmp;
+  tmp = getc(file);
+  while(tmp != ' ' && tmp != '\n'){
+    rows = rows*10;
+    rows += atoi(&tmp);
+    tmp = getc(file);
+  }
+  tmp = getc(file);
+  while(tmp != ' ' && tmp != '\n'){
+    colls = colls*10;
+    colls += atoi(&tmp);
+    tmp = getc(file);
+  }
+  if(rows<1 || colls<1)
+    return false;
+  
+  return true;
+}
+
+int* MapConstructor(int rows, int colls){
+
+  return NULL;
 }
