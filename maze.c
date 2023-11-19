@@ -60,10 +60,11 @@ bool MazeTest(char *arg){
   int rows = 0, colls = 0;
   char tmp;
   tmp = getc(file);
-  while(tmp != ' ' && tmp != '\n' && tmp!= EOF){
+
+  while(tmp != ' ' && tmp != '\n' && tmp!= EOF){  //Loading rows and colls value from file into ints
     rows = rows*10;
     rows += atoi(&tmp);
-    tmp = getc(file);
+    tmp = getc(file);       
   }
   tmp = getc(file);
   while(tmp != ' ' && tmp != '\n' && tmp!= EOF){
@@ -74,12 +75,12 @@ bool MazeTest(char *arg){
   if(rows<1 || colls<1)
     return false;
 
-  int x = 0, y = 0;
+  int x = 0, y = 0;   //x=colls, y=rows
   tmp = getc(file);
   while(tmp != EOF){
-    while(tmp != '\n' && tmp!= EOF){
+    while(tmp != '\n' && tmp!= EOF){      //Check is map file contains bad values (>7/<0), not enough value, or too many values
       if(tmp != ' '){
-        if(atoi(&tmp)>7 || atoi(&tmp)<0)    //Still accepts letters!!! FIXME!!
+        if(atoi(&tmp)>7 || atoi(&tmp)<0)                    //Still accepts letters!!! FIXME!!
           return false;
         x++;
       }
