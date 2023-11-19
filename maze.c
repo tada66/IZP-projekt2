@@ -28,7 +28,7 @@ int ParseArgs(char **arguments, int argumentCount) {
       return R+C+1;
     }
   }
-  return 2;
+  return -1;
 }
 int main(int argc, char **argv){
     printf("%d", ParseArgs(argv, argc));
