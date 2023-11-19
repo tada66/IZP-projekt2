@@ -60,20 +60,39 @@ bool MazeTest(char *arg){
   int rows = 0, colls = 0;
   char tmp;
   tmp = getc(file);
-  while(tmp != ' ' && tmp != '\n'){
+  while(tmp != ' ' && tmp != '\n' && tmp!= EOF){
     rows = rows*10;
     rows += atoi(&tmp);
     tmp = getc(file);
   }
   tmp = getc(file);
-  while(tmp != ' ' && tmp != '\n'){
+  while(tmp != ' ' && tmp != '\n' && tmp!= EOF){
     colls = colls*10;
     colls += atoi(&tmp);
     tmp = getc(file);
   }
   if(rows<1 || colls<1)
     return false;
-  
+
+  int x = 0, y = 0;
+  tmp = getc(file);
+  while(tmp != EOF){
+    while(tmp != '\n' && tmp!= EOF){
+      if(tmp != ' '){
+        if(atoi(&tmp)>7 || atoi(&tmp)<0)    //Still accepts letters!!! FIXME!!
+          return false;
+        x++;
+      }
+      tmp = getc(file);
+    }
+    y++;
+    if(x!=colls)
+      return false;
+    tmp = getc(file);
+    x=0;
+  }
+  if(y!=rows)
+      return false;
   return true;
 }
 
