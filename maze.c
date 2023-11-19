@@ -1,13 +1,11 @@
+#include "types.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-void PrintHelp(){
-  printf("Available arguments: --help, --test, --rpath, --lpath\n");
-  printf("--help shows this help menu\n");
-  printf("--test will check any file for a valid maze definition, return Valid or Invalid\n");
-  printf("--rpath R C needs two arguments R, and C, which will be the coordinates for the entry point into the maze, --rpath then looks for an exit using the right hand rule\n");
-  printf("--lpath R C needs two arguments R, and C, which will be the coordinates for the entry point into the maze, --lpath then looks for an exit using the left hand rule\n");
+int main(int argc, char **argv){
+    printf("%d", ParseArgs(argv, argc));
+    return 0;
 }
 
 int ParseArgs(char **arguments, int argumentCount) {
@@ -39,7 +37,10 @@ int ParseArgs(char **arguments, int argumentCount) {
   return -1;
 }
 
-int main(int argc, char **argv){
-    printf("%d", ParseArgs(argv, argc));
-    return 0;
+void PrintHelp(){
+  printf("Available arguments: --help, --test, --rpath, --lpath\n");
+  printf("--help shows this help menu\n");
+  printf("--test will check any file for a valid maze definition, return Valid or Invalid\n");
+  printf("--rpath R C needs two arguments R, and C, which will be the coordinates for the entry point into the maze, --rpath then looks for an exit using the right hand rule\n");
+  printf("--lpath R C needs two arguments R, and C, which will be the coordinates for the entry point into the maze, --lpath then looks for an exit using the left hand rule\n");
 }
