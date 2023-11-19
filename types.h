@@ -10,3 +10,4 @@ typedef struct {
 void PrintHelp();
 int ParseArgs(char **arguments, int argumentCount);
 bool MazeTest(char *file);
+Map* MapCtor(Map *map, int rows, int cols);

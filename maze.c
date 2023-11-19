@@ -57,25 +57,25 @@ bool MazeTest(char *arg){
   printf("File is: %s\n", arg);
   FILE *file;
   file = fopen(arg, "r");
-  int rows = 0, colls = 0;
+  int rows = 0, cols = 0;
   char tmp;
   tmp = getc(file);
 
-  while(tmp != ' ' && tmp != '\n' && tmp!= EOF){  //Loading rows and colls value from file into ints
+  while(tmp != ' ' && tmp != '\n' && tmp!= EOF){  //Loading rows and cols value from file into ints
     rows = rows*10;
     rows += atoi(&tmp);
     tmp = getc(file);       
   }
   tmp = getc(file);
   while(tmp != ' ' && tmp != '\n' && tmp!= EOF){
-    colls = colls*10;
-    colls += atoi(&tmp);
+    cols = cols*10;
+    cols += atoi(&tmp);
     tmp = getc(file);
   }
-  if(rows<1 || colls<1)
+  if(rows<1 || cols<1)
     return false;
 
-  int x = 0, y = 0;   //x=colls, y=rows
+  int x = 0, y = 0;   //x=cols, y=rows
   tmp = getc(file);
   while(tmp != EOF){
     while(tmp != '\n' && tmp!= EOF){      //Check is map file contains bad values (>7/<0), not enough value, or too many values
@@ -87,7 +87,7 @@ bool MazeTest(char *arg){
       tmp = getc(file);
     }
     y++;
-    if(x!=colls)
+    if(x!=cols)
       return false;
     tmp = getc(file);
     x=0;
@@ -97,7 +97,25 @@ bool MazeTest(char *arg){
   return true;
 }
 
-int* MapConstructor(int rows, int colls){
-
-  return NULL;
+int MapCtor(Map *map, int cols, int rows){
+  map->cols=cols;
+  map->rows=rows;
+  size_t mapsize = rows*cols*sizeof(char);
+  if(mapsize!=0){
+    map->cells=malloc(mapsize);
+    if(map->cells==NULL)
+      return 0;
+  }
+  else
+    return 0;
+  return 1;
 }
+
+void MapDtor(Map *map){
+  free(map->cells);
+  map->cells=NULL;
+  map->cols=0;
+  map->rows=0;
+}
+
+
