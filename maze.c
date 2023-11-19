@@ -32,6 +32,9 @@ int ParseArgs(char **arguments, int argumentCount) {
         return 0;
       int R = atoi(arguments[i+1]);
       int C = atoi(arguments[i+2]);
+      Map map;
+      if(MapCtor(&map, 6, 7))
+        return 1;
       return R+C;
     }
     else if(strcmp("--rpath", arguments[i]) == 0){
@@ -54,7 +57,6 @@ void PrintHelp(){
 }
 
 bool MazeTest(char *arg){
-  printf("File is: %s\n", arg);
   FILE *file;
   file = fopen(arg, "r");
   int rows = 0, cols = 0;
@@ -118,4 +120,6 @@ void MapDtor(Map *map){
   map->rows=0;
 }
 
+int MapInit(Map *map, char* arg){
 
+}
