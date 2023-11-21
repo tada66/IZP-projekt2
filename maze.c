@@ -5,8 +5,8 @@
 #include <stdbool.h>
 
 int main(int argc, char **argv){
-    printf("%d", ParseArgs(argv, argc));
-    return 0;
+  printf("%d", ParseArgs(argv, argc));
+  return 0;
 }
 void MapPrint(Map *map){
   printf("Rows: %d\nCols: %d\n", map->rows, map->cols);
