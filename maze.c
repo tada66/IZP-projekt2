@@ -9,7 +9,7 @@ int main(int argc, char **argv){
     return 0;
 }
 void MapPrint(Map *map){
-  printf("Cols: %d\nRows: %d\n", map->cols, map->rows);
+  printf("Rows: %d\nCols: %d\n", map->rows, map->cols);
   for(int i=0; i<(map->cols*map->rows); i++){
     printf("%c ", map->cells[i]);
     if((i+1)%map->cols==0)
@@ -35,6 +35,10 @@ int ParseArgs(char **arguments, int argumentCount) {
         else
           printf("Invalid\n");
         MapPrint(&map);
+        if(MapTest(&map))
+          printf("MapTest valid!\n");
+        else
+          printf("MapTest invalid!\n");
     }
     else if(strcmp("--lpath", arguments[i]) == 0){
       if(i+2>=argumentCount)
@@ -65,28 +69,13 @@ void PrintHelp(){
   printf("--lpath R C needs two arguments R, and C, which will be the coordinates for the entry point into the maze, --lpath then looks for an exit using the left hand rule\n");
 }
 
-bool MazeTest(Map *map){
+bool MapTest(Map *map){
   if(map->cols<1 || map->rows<1)
     return false;
-  /*int x = 0, y = 0;   //x=cols, y=rows
-  tmp = getc(file);
-  while(tmp != EOF){
-    while(tmp != '\n' && tmp!= EOF){      //Check is map file contains bad values (>7/<0), not enough value, or too many values
-      if(tmp != ' '){
-        if(atoi(&tmp)>7 || atoi(&tmp)<0)                    //Still accepts letters!!! FIXME!!
-          return false;
-        x++;
-      }
-      tmp = getc(file);
-    }
-    y++;
-    if(x!=cols)
+  for(int i=0; i<(map->cols*map->rows); i++){
+    if(map->cells[i]>'7'  || map->cells[i]<'0')
       return false;
-    tmp = getc(file);
-    x=0;
   }
-  if(y!=rows)
-    return false;*/
   return true;
 }
 
@@ -117,9 +106,8 @@ bool MapInit(Map *map, char* arg){
   int rows = 0, cols = 0;
   char tmp;
   tmp = getc(file);
-  
 
-  while(tmp != ' ' && tmp != '\n' && tmp!= EOF){  //Loading rows and cols value from file into ints
+  while(tmp != ' ' && tmp != '\n' && tmp!= EOF){
     rows = rows*10;
     rows += atoi(&tmp);
     tmp = getc(file);       
@@ -130,12 +118,15 @@ bool MapInit(Map *map, char* arg){
     cols += atoi(&tmp);
     tmp = getc(file);
   }
-  if(!MapCtor(map, cols, rows))
+
+  if(!MapCtor(map, cols, rows)){
+    fprintf(stderr, "Error in allocating memory!\n");
     return false;
+  }
   tmp = getc(file);
   int i = 0;
   while(tmp != EOF){
-    while(tmp != '\n' && tmp!= EOF){      //Check is map file contains bad values (>7/<0), not enough value, or too many values
+    while(tmp != '\n' && tmp!= EOF){
       if(tmp != ' '){
         if(map->cells!=NULL){
           map->cells[i]=tmp;
@@ -148,5 +139,4 @@ bool MapInit(Map *map, char* arg){
     }
     tmp = getc(file);
   }
-
 }

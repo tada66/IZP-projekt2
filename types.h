@@ -9,7 +9,7 @@ typedef struct {
 
 void PrintHelp();
 int ParseArgs(char **arguments, int argumentCount);
-bool MazeTest(Map *map);
+bool MapTest(Map *map);
 bool MapCtor(Map *map, int cols, int rows);
 void MapDtor(Map *map);
 bool MapInit(Map *map, char* arg);
