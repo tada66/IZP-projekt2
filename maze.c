@@ -8,7 +8,14 @@ int main(int argc, char **argv){
     printf("%d", ParseArgs(argv, argc));
     return 0;
 }
-
+void MapPrint(Map *map){
+  printf("Cols: %d\nRows: %d\n", map->cols, map->rows);
+  for(int i=0; i<(map->cols*map->rows); i++){
+    printf("%c ", map->cells[i]);
+    if((i+1)%map->cols==0)
+      printf("\n");
+  }
+}
 int ParseArgs(char **arguments, int argumentCount) {
   if(argumentCount<0)
     return 0;
@@ -22,10 +29,12 @@ int ParseArgs(char **arguments, int argumentCount) {
           fprintf(stderr, "Not enough arguments\n");
           return 0;
         }
-        if(MazeTest(arguments[i]))
+        Map map;
+        if(MapInit(&map, arguments[i]))
           printf("Valid\n");
         else
           printf("Invalid\n");
+        MapPrint(&map);
     }
     else if(strcmp("--lpath", arguments[i]) == 0){
       if(i+2>=argumentCount)
@@ -33,7 +42,7 @@ int ParseArgs(char **arguments, int argumentCount) {
       int R = atoi(arguments[i+1]);
       int C = atoi(arguments[i+2]);
       Map map;
-      if(MapCtor(&map, 6, 7))
+      if(MapInit(&map, arguments[i+3]))
         return 1;
       return R+C;
     }
@@ -56,28 +65,10 @@ void PrintHelp(){
   printf("--lpath R C needs two arguments R, and C, which will be the coordinates for the entry point into the maze, --lpath then looks for an exit using the left hand rule\n");
 }
 
-bool MazeTest(char *arg){
-  FILE *file;
-  file = fopen(arg, "r");
-  int rows = 0, cols = 0;
-  char tmp;
-  tmp = getc(file);
-
-  while(tmp != ' ' && tmp != '\n' && tmp!= EOF){  //Loading rows and cols value from file into ints
-    rows = rows*10;
-    rows += atoi(&tmp);
-    tmp = getc(file);       
-  }
-  tmp = getc(file);
-  while(tmp != ' ' && tmp != '\n' && tmp!= EOF){
-    cols = cols*10;
-    cols += atoi(&tmp);
-    tmp = getc(file);
-  }
-  if(rows<1 || cols<1)
+bool MazeTest(Map *map){
+  if(map->cols<1 || map->rows<1)
     return false;
-
-  int x = 0, y = 0;   //x=cols, y=rows
+  /*int x = 0, y = 0;   //x=cols, y=rows
   tmp = getc(file);
   while(tmp != EOF){
     while(tmp != '\n' && tmp!= EOF){      //Check is map file contains bad values (>7/<0), not enough value, or too many values
@@ -95,11 +86,11 @@ bool MazeTest(char *arg){
     x=0;
   }
   if(y!=rows)
-      return false;
+    return false;*/
   return true;
 }
 
-int MapCtor(Map *map, int cols, int rows){
+bool MapCtor(Map *map, int cols, int rows){
   map->cols=cols;
   map->rows=rows;
   size_t mapsize = rows*cols*sizeof(char);
@@ -120,6 +111,42 @@ void MapDtor(Map *map){
   map->rows=0;
 }
 
-int MapInit(Map *map, char* arg){
+bool MapInit(Map *map, char* arg){
+  FILE *file;
+  file = fopen(arg, "r");
+  int rows = 0, cols = 0;
+  char tmp;
+  tmp = getc(file);
+  
+
+  while(tmp != ' ' && tmp != '\n' && tmp!= EOF){  //Loading rows and cols value from file into ints
+    rows = rows*10;
+    rows += atoi(&tmp);
+    tmp = getc(file);       
+  }
+  tmp = getc(file);
+  while(tmp != ' ' && tmp != '\n' && tmp!= EOF){
+    cols = cols*10;
+    cols += atoi(&tmp);
+    tmp = getc(file);
+  }
+  if(!MapCtor(map, cols, rows))
+    return false;
+  tmp = getc(file);
+  int i = 0;
+  while(tmp != EOF){
+    while(tmp != '\n' && tmp!= EOF){      //Check is map file contains bad values (>7/<0), not enough value, or too many values
+      if(tmp != ' '){
+        if(map->cells!=NULL){
+          map->cells[i]=tmp;
+          i++;
+        }
+        else
+          return false;
+      }
+      tmp = getc(file);
+    }
+    tmp = getc(file);
+  }
 
 }
