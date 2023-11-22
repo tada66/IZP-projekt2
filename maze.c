@@ -93,20 +93,19 @@ bool MapTest(Map *map){
   WallFound=false;  //Now we go check vertical walls
   for(int i=0; i<map->cols; i++){    //We flip the map 90° for the scan
     for(int j=0; j<map->rows; j++){
-      if(j==0 && (i&2)==2)  //Board is staggered, no need to check for first in some cases
+      if(j==0 && (i&1)==0)  //Board is staggered, no need to check for first in some cases (0, 2, 4)
         j++;
       if((map->cells[(map->cols*j)+i]&4)==4){
-        if(((j+i)%2)!=0)
+        if(((j+i)%2)!=0)    /* Cell shape /\ */ 
           WallFound=true;
-        else{
+        else{               /* Cell shape \/ */
+          if(!WallFound)
+            return false;
           WallFound=false;
-          printf("SKIP horizontal wall found at i=%d, j=%d, cell=%c\n", i, j, map->cells[(map->cols*j)+i]);
         }
-        printf("horizontal wall found at i=%d, j=%d, cell=%c\n", i, j, map->cells[(map->cols*j)+i]);
       }
       else{
         if(WallFound){
-          printf("FAIL horizontal wall found at i=%d, j=%d, cell=%c\n", i, j, map->cells[(map->cols*j)+i]);
           return false;
         }
         WallFound=false;
