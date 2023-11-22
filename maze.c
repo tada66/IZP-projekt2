@@ -93,7 +93,7 @@ bool MapTest(Map *map){
       if((map->cells[(map->cols*i)+j]&2)==2)      //we look for something xxx1x
         WallFound=true;
       else
-        WallFound=false;      //FIXME wall '/' -> ' ' works, however, ' ' -> '/' DOES NOT
+        WallFound=false;
     }
   }
   WallFound=false;                    //Now we go check vertical walls
