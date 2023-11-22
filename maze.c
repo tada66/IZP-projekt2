@@ -81,9 +81,15 @@ bool MapTest(Map *map){
   for(int i=0; i<map->rows; i++){   //First check the walls in rows, ie left and right
     WallFound=false;
     for(int j=0; j<(map->cols); j++){
-      if(WallFound)
+      if(WallFound){
         if((map->cells[(map->cols*i)+j]&1)!=1)    //we look for something xxxx1
           return false;
+      }
+      else{
+        if(j!=0)
+          if((map->cells[(map->cols*i)+j]&1)==1)
+            return false;
+      }
       if((map->cells[(map->cols*i)+j]&2)==2)      //we look for something xxx1x
         WallFound=true;
       else
