@@ -3,3 +3,4 @@
 .vscode/
 tests/results/*
 tests/inputs/*
+tests/maze
