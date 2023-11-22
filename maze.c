@@ -90,7 +90,7 @@ bool MapTest(Map *map){
         WallFound=false;      //FIXME wall '/' -> ' ' works, however, ' ' -> '/' DOES NOT
     }
   }
-  WallFound=false;  //Now we go check vertical walls
+  WallFound=false;                    //Now we go check vertical walls
   for(int i=0; i<map->cols; i++){    //We flip the map 90° for the scan
     for(int j=0; j<map->rows; j++){
       if(j==0 && (i&1)==0)  //Board is staggered, no need to check for first in some cases (0, 2, 4)
@@ -105,9 +105,8 @@ bool MapTest(Map *map){
         }
       }
       else{
-        if(WallFound){
+        if(WallFound)
           return false;
-        }
         WallFound=false;
       }
     }
