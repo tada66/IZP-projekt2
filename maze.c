@@ -30,15 +30,13 @@ int ParseArgs(char **arguments, int argumentCount) {
           return 0;
         }
         Map map;
-        if(MapInit(&map, arguments[i]))
+        if(!MapInit(&map, arguments[i]))
+          fprintf(stderr, "Map initialization failed!\n");
+        //MapPrint(&map);
+        if(MapTest(&map))
           printf("Valid\n");
         else
           printf("Invalid\n");
-        MapPrint(&map);
-        if(MapTest(&map))
-          printf("MapTest valid!\n");
-        else
-          printf("MapTest invalid!\n");
         MapDtor(&map);
     }
     else if(strcmp("--lpath", arguments[i]) == 0){
@@ -149,7 +147,9 @@ bool MapInit(Map *map, char* arg){
   tmp = getc(file);
 
   while(tmp != ' ' && tmp != '\n' && tmp!= EOF){
-    rows = rows*10;
+    while(tmp>'9'||tmp<'0')   //CAUTION
+      tmp=getc(file);         //For some reason there is '-ne' at the start of the official tests, so idk this should make the map load
+    rows = rows*10;           //Those tests are weird though, for some reason they also expect the program to do a double new line (maybe be CRLF issue?)
     rows += atoi(&tmp);
     tmp = getc(file);       
   }
@@ -182,4 +182,5 @@ bool MapInit(Map *map, char* arg){
     tmp = getc(file);
   }
   fclose(file);
+  return true;
 }
