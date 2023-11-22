@@ -182,4 +182,5 @@ bool MapInit(Map *map, char* arg){
     tmp = getc(file);
   }
   fclose(file);
+  return true;
 }
