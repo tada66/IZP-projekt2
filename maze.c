@@ -85,11 +85,10 @@ bool MapTest(Map *map){
         if((map->cells[(map->cols*i)+j]&1)!=1)    //we look for something xxxx1
           return false;
       }
-      else{
+      else
         if(j!=0)
           if((map->cells[(map->cols*i)+j]&1)==1)
             return false;
-      }
       if((map->cells[(map->cols*i)+j]&2)==2)      //we look for something xxx1x
         WallFound=true;
       else
