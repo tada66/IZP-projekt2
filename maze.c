@@ -5,7 +5,7 @@
 #include <stdbool.h>      //TODO Pozor!!! nespolehat se ze system uvolni vsechnu pamet, program musi pamet uvolnit sam
 
 int main(int argc, char **argv){
-  printf("%d", ParseArgs(argv, argc));
+  ParseArgs(argv, argc);
   return 0;
 }
 void MapPrint(Map *map){
@@ -39,6 +39,7 @@ int ParseArgs(char **arguments, int argumentCount) {
           printf("MapTest valid!\n");
         else
           printf("MapTest invalid!\n");
+        MapDtor(&map);
     }
     else if(strcmp("--lpath", arguments[i]) == 0){
       if(i+2>=argumentCount)
@@ -75,6 +76,43 @@ bool MapTest(Map *map){
   for(int i=0; i<(map->cols*map->rows); i++){
     if(map->cells[i]>'7'  || map->cells[i]<'0')
       return false;
+  }
+  bool WallFound = false;
+  for(int i=0; i<map->rows; i++){   //First check the walls in rows, ie left and right
+    WallFound=false;
+    for(int j=0; j<(map->cols); j++){
+      if(WallFound)
+        if((map->cells[(map->cols*i)+j]&1)!=1)    //we look for something xxxx1
+          return false;
+      if((map->cells[(map->cols*i)+j]&2)==2)      //we look for something xxx1x
+        WallFound=true;
+      else
+        WallFound=false;      //FIXME wall '/' -> ' ' works, however, ' ' -> '/' DOES NOT
+    }
+  }
+  WallFound=false;  //Now we go check vertical walls
+  for(int i=0; i<map->cols; i++){    //We flip the map 90° for the scan
+    for(int j=0; j<map->rows; j++){
+      if(j==0 && (i&2)==2)  //Board is staggered, no need to check for first in some cases
+        j++;
+      if((map->cells[(map->cols*j)+i]&4)==4){
+        if(((j+i)%2)!=0)
+          WallFound=true;
+        else{
+          WallFound=false;
+          printf("SKIP horizontal wall found at i=%d, j=%d, cell=%c\n", i, j, map->cells[(map->cols*j)+i]);
+        }
+        printf("horizontal wall found at i=%d, j=%d, cell=%c\n", i, j, map->cells[(map->cols*j)+i]);
+      }
+      else{
+        if(WallFound){
+          printf("FAIL horizontal wall found at i=%d, j=%d, cell=%c\n", i, j, map->cells[(map->cols*j)+i]);
+          return false;
+        }
+        WallFound=false;
+      }
+    }
+    WallFound=false;
   }
   return true;
 }
@@ -121,6 +159,7 @@ bool MapInit(Map *map, char* arg){
 
   if(!MapCtor(map, cols, rows)){
     fprintf(stderr, "Error in allocating memory!\n");
+    fclose(file);
     return false;
   }
   tmp = getc(file);
@@ -139,4 +178,5 @@ bool MapInit(Map *map, char* arg){
     }
     tmp = getc(file);
   }
+  fclose(file);
 }
