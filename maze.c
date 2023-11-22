@@ -31,7 +31,7 @@ int ParseArgs(char **arguments, int argumentCount) {
         }
         Map map;
         if(!MapInit(&map, arguments[i]))
-          fprintf(stderr, "Map initialization failed!\n");
+          return -1;
         //MapPrint(&map);
         if(MapTest(&map))
           printf("Valid\n");
@@ -142,6 +142,10 @@ void MapDtor(Map *map){
 bool MapInit(Map *map, char* arg){
   FILE *file;
   file = fopen(arg, "r");
+  if(file==NULL){
+    fprintf(stderr, "Error loading file! Does it exist?\n");
+    return false;   //No need for fclose because file failed to open and therefore there isn't anything to close, ie will result in segfault
+  }
   int rows = 0, cols = 0;
   char tmp;
   tmp = getc(file);
