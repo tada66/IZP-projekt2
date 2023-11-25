@@ -268,18 +268,49 @@ int start_border(Map *map, int r, int c, int leftright){
   /*leftright = direction to go 
       0=follow lefthand rule
       1=follow righthand rule
+    returns =
+      -1=entry was not possible
+      0=go down
+      1= go up
+      2= go left
+      3= go right
   */
-  if(leftright!=0 || leftright!=1){
+  if(leftright<0 || leftright>1){
     fprintf(stderr, "Wrong value of leftright in start_border!\n");
     return -1;
   }
   if(!FitsInMap(map, r, c))
     return -1;
-  if(leftright==0){//left
+  int rotation =-1;
+  /* 0=going down
+    1=going up
+    2=going left
+    3=going right
+  */
+  if(c==0)                //Entering from left
+    if((map->cells[r*map->cols]&1)!=1)
+      rotation=3;
+  if((c+1)==map->cols)    //entering from right
+    if((map->cells[r*map->cols+c]&2)!=2)
+      rotation=2;
+  if(r==0)                //entering from top
+    if((map->cells[c]&4)!=4)
+      rotation=0;
+  if((r+1)==map->rows)    //entering from bottom
+    if((map->cells[r*map->cols+c]&4)!=4)
+      rotation=1;
+  if(rotation==-1){
+    fprintf(stderr, "Entry was not possible from specified coordinates (%d, %d)!\n", r, c);
+    return -1;
+  }
+  if(leftright==0){       //left hand rule
+    //if(((r+1)&1)==1){
+      printf("rotation: %d\n", rotation);
+    //}
+  }
+  else{                   //right hand rule
 
   }
-  else{//right
-
-  }
+  return 0;
 }
 
