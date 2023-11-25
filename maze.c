@@ -5,7 +5,7 @@
 #include <stdbool.h>      //TODO Pozor!!! nespolehat se ze system uvolni vsechnu pamet, program musi pamet uvolnit sam
 
 int main(int argc, char **argv){
-  ParseArgs(argv, argc);
+  printf("%d\n", ParseArgs(argv, argc));
   return 0;
 }
 void MapPrint(Map *map){    //This function prints the whole map, used for debugging, remove for release
@@ -56,6 +56,18 @@ int ParseArgs(char **arguments, int argumentCount) {
       int C = atoi(arguments[i+2]);
       return R+C+1;
     }
+    else if(strcmp("--isb", arguments[i]) == 0){
+      if(i+4>=argumentCount)
+        return 0;
+      Map map;
+      if(!MapInit(&map, arguments[i+1]))
+        return -1;
+      int R = atoi(arguments[i+2]);
+      int C = atoi(arguments[i+3]);
+      int b = atoi(arguments[i+4]);
+      printf("is border: %d\n", isborder(&map, R, C, b));
+      return -2;
+    }
   }
   return -1;
 }
@@ -68,7 +80,7 @@ void PrintHelp(){
   printf("--lpath R C needs two arguments R, and C, which will be the coordinates for the entry point into the maze, --lpath then looks for an exit using the left hand rule\n");
 }
 
-bool MapTest(Map *map){
+bool MapTest(Map *map){                 //TODO: check if some arguments are missing
   if(map->cols<1 || map->rows<1)
     return false;
   for(int i=0; i<(map->cols*map->rows); i++){
@@ -198,11 +210,29 @@ bool isborder(Map *map, int r, int c, int border){
   however, that'd require the only valid values being 1,2,4 and the omission of 3 could cause some unexpected issues
   */
   if(border<0 || border>3){
-    fprintf(stderr, "Error invalid value of border argument in isborder\n");
+    fprintf(stderr, "Error invalid value of border argument in isborder!\n");
     return false;
   }
+  if(r>=map->rows || r<0){
+    fprintf(stderr, "Invalid value of rows in isborder!\n");
+    return false;
+  }
+  if(c>=map->cols || c<0){
+    fprintf(stderr, "Invalid value of cols in isborder!\n");
+    return false;
+  }
+  printf("checking c%c d%d &%d border%d at %d %d\n", map->cells[(r*map->cols)+c], map->cells[(r*map->cols)+c], map->cells[(r*map->cols)+c]&border, border, r , c);
   if(border==0){//checking the top/bottom border - bitwise 4 op - xxxx1xx
-    
+    if((map->cells[(r*map->cols)+c]&4)==4)
+      return true;
+  }
+  else if(border==1){
+    if((map->cells[(r*map->cols)+c]&2)==2)
+      return true;
+  }
+  else{
+    if((map->cells[(r*map->cols)+c]&1)==1)
+      return true;
   }
   return false;
 }
