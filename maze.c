@@ -80,14 +80,14 @@ bool MapTest(Map *map){
     WallFound=false;
     for(int j=0; j<(map->cols); j++){
       if(WallFound){
-        if((map->cells[(map->cols*i)+j]&1)!=1)    //we look for something xxxx1
+        if((map->cells[(map->cols*i)+j]&1)!=1)    //we dont want something ...xxxx1
           return false;
       }
       else
         if(j!=0)
           if((map->cells[(map->cols*i)+j]&1)==1)
             return false;
-      if((map->cells[(map->cols*i)+j]&2)==2)      //we look for something xxx1x
+      if((map->cells[(map->cols*i)+j]&2)==2)      //we look for something ...xxx1x
         WallFound=true;
       else
         WallFound=false;
@@ -96,7 +96,7 @@ bool MapTest(Map *map){
   WallFound=false;                    //Now we go check vertical walls
   for(int i=0; i<map->cols; i++){    //We flip the map 90° for the scan
     for(int j=0; j<map->rows; j++){
-      if(j==0 && (i&1)==0)  //Board is staggered, no need to check for first in some cases (0, 2, 4)
+      if(j==0 && (i&1)==0)  //Board is staggered, no need to check for first in some cases (0, 2, 4,...)
         j++;
       if((map->cells[(map->cols*j)+i]&4)==4){
         if(((j+i)%2)!=0)    /* Cell shape /\ */ 
@@ -194,7 +194,15 @@ bool isborder(Map *map, int r, int c, int border){
   0=check top/bottom border
   1=check right border
   2=check left border
+  could've been implemented in a way that'd make border acting is the second bit b for the bitwise and operation,
+  however, that'd require the only valid values being 1,2,4 and the omission of 3 could cause some unexpected issues
   */
-  
+  if(border<0 || border>3){
+    fprintf(stderr, "Error invalid value of border argument in isborder\n");
+    return false;
+  }
+  if(border==0){//checking the top/bottom border - bitwise 4 op - xxxx1xx
+    
+  }
   return false;
 }
