@@ -282,10 +282,10 @@ int start_border(Map *map, int r, int c, int leftright){
   if(!FitsInMap(map, r, c))
     return -1;
   int rotation =-1;
-  /* 0=going down
-    1=going up
-    2=going left
-    3=going right
+  /* 0=going down (entering from top)
+    1=going up    (entering from bottom)
+    2=going left  (entering from right)
+    3=going right (entering from left)
   */
   if(c==0)                //Entering from left
     if((map->cells[r*map->cols]&1)!=1)
@@ -309,7 +309,21 @@ int start_border(Map *map, int r, int c, int leftright){
     //}
   }
   else{                   //right hand rule
-
+    if(rotation==3){
+      //check 2 4 1 on odd rows
+      //check 4 2 1 on even rows
+      printf("yeag guy\n");
+    }
+    if(rotation==2){
+      //check 4 1 2 on odd rows
+      //check 2 1 4 on even rows
+    }
+    if(rotation==0){
+      //check 1 2 4
+    }
+    if(rotation==1){
+      //check 2 1 4
+    }
   }
   return 0;
 }
