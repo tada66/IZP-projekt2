@@ -8,7 +8,7 @@ int main(int argc, char **argv){
   ParseArgs(argv, argc);
   return 0;
 }
-void MapPrint(Map *map){
+void MapPrint(Map *map){    //This function prints the whole map, used for debugging, remove for release
   printf("Rows: %d\nCols: %d\n", map->rows, map->cols);
   for(int i=0; i<(map->cols*map->rows); i++){
     printf("%c ", map->cells[i]);
@@ -32,7 +32,7 @@ int ParseArgs(char **arguments, int argumentCount) {
         Map map;
         if(!MapInit(&map, arguments[i]))
           return -1;
-        //MapPrint(&map);
+        //MapPrint(&map);                           //TODO: remove; DEBUG only
         if(MapTest(&map))
           printf("Valid\n");
         else
@@ -118,7 +118,7 @@ bool MapTest(Map *map){
   return true;
 }
 
-bool MapCtor(Map *map, int cols, int rows){
+bool MapCtor(Map *map, int cols, int rows){//returns 0 upon encountering an error with allocating memory
   map->cols=cols;
   map->rows=rows;
   size_t mapsize = rows*cols*sizeof(char);
@@ -143,7 +143,7 @@ bool MapInit(Map *map, char* arg){
   FILE *file;
   file = fopen(arg, "r");
   if(file==NULL){
-    fprintf(stderr, "Error loading file! Does it exist?\n");
+    fprintf(stderr, "Error loading file %s! Does it exist?\n", arg);
     return false;   //No need for fclose because file failed to open and therefore there isn't anything to close, ie will result in segfault
   }
   int rows = 0, cols = 0;
@@ -165,7 +165,7 @@ bool MapInit(Map *map, char* arg){
   }
 
   if(!MapCtor(map, cols, rows)){
-    fprintf(stderr, "Error in allocating memory!\n");
+    fprintf(stderr, "Error allocating memory!\n");
     fclose(file);
     return false;
   }
@@ -187,4 +187,14 @@ bool MapInit(Map *map, char* arg){
   }
   fclose(file);
   return true;
+}
+
+bool isborder(Map *map, int r, int c, int border){
+  /*int border behaviour 
+  0=check top/bottom border
+  1=check right border
+  2=check left border
+  */
+  
+  return false;
 }
