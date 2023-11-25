@@ -249,7 +249,10 @@ bool isborder(Map *map, int r, int c, int border){
   }
   return false;
 }
+
 bool FitsInMap(Map *map, int r, int c){ //Checks whether the r and c coordinates are valid and fit in the maze defined
+  if(map==NULL)
+    return false;
   if(r>=map->rows || r<0){
     fprintf(stderr, "Invalid value of rows! Input=%d Maximum=%d\n", r, map->rows-1);
     return false;
@@ -261,13 +264,22 @@ bool FitsInMap(Map *map, int r, int c){ //Checks whether the r and c coordinates
   return true;
 }
 
-int start_border(Map *map, int r, int c, int leftright){
+int start_border(Map *map, int r, int c, int leftright){ 
+  /*leftright = direction to go 
+      0=follow lefthand rule
+      1=follow righthand rule
+  */
   if(leftright!=0 || leftright!=1){
     fprintf(stderr, "Wrong value of leftright in start_border!\n");
     return -1;
   }
   if(!FitsInMap(map, r, c))
-    return false;
+    return -1;
+  if(leftright==0){//left
 
+  }
+  else{//right
+
+  }
 }
 
