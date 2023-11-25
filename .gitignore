@@ -1,3 +1,6 @@
 *.out
 .editorconfig
 .vscode/
+tests/results/*
+tests/inputs/*
+tests/maze
