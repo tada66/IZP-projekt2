@@ -15,3 +15,4 @@ void MapDtor(Map *map);
 bool MapInit(Map *map, char* arg);
 bool isborder(Map *map, int r, int c, int border);
 int start_border(Map *map, int r, int c, int leftright);
+bool FitsInMap(Map *map, int r, int c);

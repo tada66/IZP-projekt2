@@ -5,7 +5,7 @@
 #include <stdbool.h>      //TODO Pozor!!! nespolehat se ze system uvolni vsechnu pamet, program musi pamet uvolnit sam
 
 int main(int argc, char **argv){
-  printf("%d\n", ParseArgs(argv, argc));
+  ParseArgs(argv, argc);
   return 0;
 }
 void MapPrint(Map *map){    //This function prints the whole map, used for debugging, remove for release
@@ -16,28 +16,33 @@ void MapPrint(Map *map){    //This function prints the whole map, used for debug
       printf("\n");
   }
 }
+
 int ParseArgs(char **arguments, int argumentCount) {
   if(argumentCount<0)
     return 0;
   for(int i=1; i<argumentCount; i++){
     if(strcmp("--help", arguments[i]) == 0){
+      if(argumentCount>2){
+        fprintf(stderr, "Too many arguments!\n");
+        return -1;
+      }
       PrintHelp();
       return 0;
     }
     else if (strcmp("--test", arguments[i]) == 0){
-        if(++i>=argumentCount){
-          fprintf(stderr, "Not enough arguments\n");
-          return 0;
-        }
-        Map map;
-        if(!MapInit(&map, arguments[i]))
-          return -1;
-        //MapPrint(&map);                           //TODO: remove; DEBUG only
-        if(MapTest(&map))
-          printf("Valid\n");
-        else
-          printf("Invalid\n");
-        MapDtor(&map);
+      if(++i>=argumentCount){
+        fprintf(stderr, "Not enough arguments\n");
+        return 0;
+      }
+      Map map;
+      if(!MapInit(&map, arguments[i]))
+        return -1;
+      //MapPrint(&map);                           //TODO: remove; DEBUG only
+      if(MapTest(&map))
+        printf("Valid\n");
+      else
+        printf("Invalid\n");
+      MapDtor(&map);
     }
     else if(strcmp("--lpath", arguments[i]) == 0){
       if(i+2>=argumentCount)
@@ -68,6 +73,18 @@ int ParseArgs(char **arguments, int argumentCount) {
       printf("is border: %d\n", isborder(&map, R, C, b));
       return -2;
     }
+    else if(strcmp("--stb", arguments[i]) == 0){
+      if(i+4>=argumentCount)
+        return 0;
+      Map map;
+      if(!MapInit(&map, arguments[i+1]))
+        return -1;
+      int R = atoi(arguments[i+2]);
+      int C = atoi(arguments[i+3]);
+      int lr = atoi(arguments[i+4]);
+      printf("start_border: %d\n", start_border(&map, R, C, lr));
+      return -2;
+    }
   }
   return -1;
 }
@@ -78,6 +95,9 @@ void PrintHelp(){
   printf("--test will check any file for a valid maze definition, return Valid or Invalid\n");
   printf("--rpath R C needs two arguments R, and C, which will be the coordinates for the entry point into the maze, --rpath then looks for an exit using the right hand rule\n");
   printf("--lpath R C needs two arguments R, and C, which will be the coordinates for the entry point into the maze, --lpath then looks for an exit using the left hand rule\n");
+  printf("----------DEBUG ONLY----------\n");
+  printf("--isb test for isborder, needs maze file, r, c, border to check - 0 for bottom-top, 1 for right, 2 for left\n");
+  printf("--stb test for start_border, needs maze file, r, c, direction to go - 0 for left, 1 for right\n");
 }
 
 bool MapTest(Map *map){                 //TODO: check if some arguments are missing
@@ -213,15 +233,8 @@ bool isborder(Map *map, int r, int c, int border){
     fprintf(stderr, "Error invalid value of border argument in isborder!\n");
     return false;
   }
-  if(r>=map->rows || r<0){
-    fprintf(stderr, "Invalid value of rows in isborder!\n");
+  if(!FitsInMap(map, r, c))
     return false;
-  }
-  if(c>=map->cols || c<0){
-    fprintf(stderr, "Invalid value of cols in isborder!\n");
-    return false;
-  }
-  printf("checking c%c d%d &%d border%d at %d %d\n", map->cells[(r*map->cols)+c], map->cells[(r*map->cols)+c], map->cells[(r*map->cols)+c]&border, border, r , c);
   if(border==0){//checking the top/bottom border - bitwise 4 op - xxxx1xx
     if((map->cells[(r*map->cols)+c]&4)==4)
       return true;
@@ -236,3 +249,25 @@ bool isborder(Map *map, int r, int c, int border){
   }
   return false;
 }
+bool FitsInMap(Map *map, int r, int c){ //Checks whether the r and c coordinates are valid and fit in the maze defined
+  if(r>=map->rows || r<0){
+    fprintf(stderr, "Invalid value of rows! Input=%d Maximum=%d\n", r, map->rows-1);
+    return false;
+  }
+  if(c>=map->cols || c<0){
+    fprintf(stderr, "Invalid value of cols! Input=%d Maximum=%d\n", c, map->cols-1);
+    return false;
+  }
+  return true;
+}
+
+int start_border(Map *map, int r, int c, int leftright){
+  if(leftright!=0 || leftright!=1){
+    fprintf(stderr, "Wrong value of leftright in start_border!\n");
+    return -1;
+  }
+  if(!FitsInMap(map, r, c))
+    return false;
+
+}
+
