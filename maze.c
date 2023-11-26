@@ -82,6 +82,7 @@ int ParseArgs(char **arguments, int argumentCount) {
       int R = atoi(arguments[i+2]);
       int C = atoi(arguments[i+3]);
       int lr = atoi(arguments[i+4]);
+      printf("next_rot:%d\n", next_rotation(&map, R, C, 1, lr));
       printf("start_border: %d\n", start_border(&map, R, C, lr));
       return -2;
     }
@@ -223,23 +224,21 @@ bool MapInit(Map *map, char* arg){
 
 bool isborder(Map *map, int r, int c, int border){
   /*int border behaviour 
-  0=check top/bottom border
-  1=check right border
-  2=check left border
-  could've been implemented in a way that'd make border acting is the second bit b for the bitwise and operation,
-  however, that'd require the only valid values being 1,2,4 and the omission of 3 could cause some unexpected issues
+  4=check top/bottom border
+  2=check right border
+  1=check left border
   */
-  if(border<0 || border>3){
+  if(border<1 || border>4 || border==3){
     fprintf(stderr, "Error invalid value of border argument in isborder!\n");
     return false;
   }
   if(!FitsInMap(map, r, c))
     return false;
-  if(border==0){//checking the top/bottom border - bitwise 4 op - xxxx1xx
+  if(border==4){//checking the top/bottom border - bitwise 4 op - xxxx1xx
     if((map->cells[(r*map->cols)+c]&4)==4)
       return true;
   }
-  else if(border==1){
+  else if(border==2){
     if((map->cells[(r*map->cols)+c]&2)==2)
       return true;
   }
@@ -310,13 +309,22 @@ int start_border(Map *map, int r, int c, int leftright){
   }
   else{                   //right hand rule
     if(rotation==3){
+      if((r&1)==0){ //Offset by one, we start at 0 so even lines became odd, and reverse
+        printf("is border2: %d\n", isborder(map, r, c, 2)); //odd
+        printf("is border4: %d\n", isborder(map, r, c, 4));
+        printf("is border1: %d\n", isborder(map, r, c, 1));
+      }
+      else{
+        printf("is border4: %d\n", isborder(map, r, c, 4));
+        printf("is border2: %d\n", isborder(map, r, c, 2));
+        printf("is border1: %d\n", isborder(map, r, c, 1));
+      }
       //check 2 4 1 on odd rows
       //check 4 2 1 on even rows
-      printf("yeag guy\n");
     }
     if(rotation==2){
       //check 4 1 2 on odd rows
-      //check 2 1 4 on even rows
+      //check 1 4 2 on even rows
     }
     if(rotation==0){
       //check 1 2 4
@@ -328,3 +336,43 @@ int start_border(Map *map, int r, int c, int leftright){
   return 0;
 }
 
+int next_rotation(Map *map, int r, int c, int leftright, int rotation){
+  int priority[3];
+  if(rotation==0){
+    priority[0] = 1;
+    priority[1] = 2;
+    priority[2] = 4;
+  }
+  else if(rotation==1){
+    priority[0] = 2;
+    priority[1] = 1;
+    priority[2] = 4;
+  }
+  else{
+    if(rotation==3){
+      priority[0] = 4;
+      priority[1] = 2;
+      priority[2] = 1;
+    }
+    if(rotation==2){
+      priority[0] = 1;
+      priority[1] = 4;
+      priority[2] = 2;
+    }
+    if(((r+c)%2)==0){   /* Cell shape \/ */ 
+      priority[0] = priority[0] + priority[1];
+      priority[1] = priority[0] - priority[1];
+      priority[0] = priority[0] - priority[1];
+    }
+  }
+  if(!leftright){//left hand rule
+    priority[0] = priority[0] + priority[1];
+    priority[1] = priority[0] - priority[1];
+    priority[0] = priority[0] - priority[1];
+  }
+  for(int i=0; i<3; i++)
+    if(!isborder(map, r, c, priority[i]))
+      return priority[i];
+  printf("%d %d %d\n", priority[0], priority[1], priority[2]);
+  return -1;
+}
