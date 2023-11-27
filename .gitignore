@@ -5,3 +5,4 @@ tests/results/*
 tests/inputs/*
 tests/maze
 test_maze.sh
+diff/*
