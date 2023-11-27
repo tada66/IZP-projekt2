@@ -82,8 +82,7 @@ int ParseArgs(char **arguments, int argumentCount) {
       int R = atoi(arguments[i+2]);
       int C = atoi(arguments[i+3]);
       int lr = atoi(arguments[i+4]);
-      printf("next_rot:%d\n", next_rotation(&map, R, C, 1, lr));
-      printf("start_border: %d\n", start_border(&map, R, C, lr));
+      Mazefollower(&map, R, C, 0, lr);
       return -2;
     }
   }
@@ -373,6 +372,31 @@ int next_rotation(Map *map, int r, int c, int leftright, int rotation){
   for(int i=0; i<3; i++)
     if(!isborder(map, r, c, priority[i]))
       return priority[i];
-  printf("%d %d %d\n", priority[0], priority[1], priority[2]);
+
   return -1;
+}
+
+void Mazefollower(Map *map, int r, int c, int leftright, int rotation){
+  while(FitsInMap(map, r, c)){
+    printf("%d %d\n", r+1, c+1);
+    int wall = next_rotation(map, r, c, leftright, rotation);
+    if(wall==1){
+      c-=1;
+      rotation=2;
+    }
+    if(wall==2){
+      c+=1;
+      rotation=3;
+    }
+    if(wall==4){
+      if(((r+c)%2)==0){
+        r-=1;
+        rotation=1;
+      }
+      else{
+        r+=1;
+        rotation=0;
+      }
+    }
+  }
 }

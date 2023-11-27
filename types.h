@@ -17,3 +17,4 @@ bool isborder(Map *map, int r, int c, int border);
 int start_border(Map *map, int r, int c, int leftright);
 bool FitsInMap(Map *map, int r, int c);
 int next_rotation(Map *map, int r, int c, int leftright, int rotation);
+void Mazefollower(Map *map, int r, int c, int leftright, int rotation);
