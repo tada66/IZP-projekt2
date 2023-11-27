@@ -1,8 +1,8 @@
 #include "types.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdbool.h>      //TODO Pozor!!! nespolehat se ze system uvolni vsechnu pamet, program musi pamet uvolnit sam
+#include <stdio.h>    //printf, fprintf, getc, fopen, fclose
+#include <stdlib.h>   //atoi, malloc, free
+#include <string.h>   //strcmp
+#include <stdbool.h>  //bool  
 
 int main(int argc, char **argv){
   ParseArgs(argv, argc);
@@ -10,10 +10,10 @@ int main(int argc, char **argv){
 }
 
 int ParseArgs(char **arguments, int argumentCount) {
-  if(argumentCount<0)
+  if(argumentCount<2)
     return 0;
-  int i=1;
-  if(strcmp("--help", arguments[i]) == 0){
+  bool isRight = false;
+  if(strcmp("--help", arguments[1]) == 0){
     if(argumentCount>2){
       fprintf(stderr, "Too many arguments!\n");
       return -1;
@@ -21,69 +21,59 @@ int ParseArgs(char **arguments, int argumentCount) {
     PrintHelp();
     return 0;
   }
-  else if (strcmp("--test", arguments[i]) == 0){
-    if(++i>=argumentCount){
+  else if (strcmp("--test", arguments[1]) == 0){
+    if(2>=argumentCount){
       fprintf(stderr, "Not enough arguments\n");
       return 0;
     }
     Map map;
-    if(!MapInit(&map, arguments[i]))
+    if(!MapInit(&map, arguments[2]))
       return -1;
     if(MapTest(&map))
       printf("Valid\n");
     else
       printf("Invalid\n");
     MapDtor(&map);
+    return 1;
   }
-  else if(strcmp("--lpath", arguments[i]) == 0){
-    if(i+2>=argumentCount){
-      fprintf(stderr, "Too few arguments!\n");
-      return 0;
-    }
-    else if(5<argumentCount){
-      fprintf(stderr, "Too many arguments!\n");
-    }
-    int R = atoi(arguments[i+1]);
-    int C = atoi(arguments[i+2]);
-    Map map;
-    if(MapInit(&map, arguments[i+3]))
-      return 1;
-    return R+C;
+  else if(strcmp("--lpath", arguments[1]) == 0){
+    isRight=false;
   }
-  else if(strcmp("--rpath", arguments[i]) == 0){
-    if(i+2>=argumentCount)
-      return 0;
-    int R = atoi(arguments[i+1]);
-    int C = atoi(arguments[i+2]);
-    return R+C+1;
-  }
-  else if(strcmp("--stb", arguments[i]) == 0){
-    if(i+4>=argumentCount)
-      return 0;
-    Map map;
-    if(!MapInit(&map, arguments[i+1]))
-      return -1;
-    int R = atoi(arguments[i+2]);
-    int C = atoi(arguments[i+3]);
-    int lr = atoi(arguments[i+4]);
-    
-    int rotation = start_border(&map, R, C, lr);
-    if(rotation!=-1)
-      Mazefollower(&map, R, C, lr, rotation);
-    return -2;
+  else if(strcmp("--rpath", arguments[1]) == 0){
+    isRight=true;
   }
   else{
     fprintf(stderr, "Invalid argument!\n");
-      return -1;
+    return -1;
   }
-
-  return -1;
+  if(3>=argumentCount){
+    fprintf(stderr, "Too few arguments!\n");
+    return -1;
+  }
+  else if(5<argumentCount){
+    fprintf(stderr, "Too many arguments!\n");
+    return -1;
+  }
+  Map map;
+  if(!MapInit(&map, arguments[4]))
+    return -1;
+  int r = atoi(arguments[2])-1;
+  int c = atoi(arguments[3])-1;
+  int rotation = start_border(&map, r, c, isRight);
+    if(rotation!=-1)
+      Mazefollower(&map, r, c, isRight, rotation);
+    else{
+      MapDtor(&map);
+      return 0;
+    }
+  MapDtor(&map);
+  return 1;
 }
 
 void PrintHelp(){
   printf("Available arguments: --help, --test, --rpath, --lpath\n");
   printf("--help shows this help menu\n");
-  printf("--test will check any file for a valid maze definition, return Valid or Invalid\n");
+  printf("--test will check any file for a valid maze definition, return Valid or Invalid. Example usage: '--test bludiste.txt'\n");
   printf("--rpath R C needs two arguments R, and C, which will be the coordinates for the entry point into the maze, --rpath then looks for an exit using the right hand rule\n");
   printf("--lpath R C needs two arguments R, and C, which will be the coordinates for the entry point into the maze, --lpath then looks for an exit using the left hand rule\n");
 }
@@ -285,7 +275,7 @@ int start_border(Map *map, int r, int c, int leftright){
       if(!isborder(map, r, c, 4))
         rotation=1;
   if(rotation==-1){
-    fprintf(stderr, "Entry was not possible from specified coordinates (%d, %d)!\n", r, c);
+    fprintf(stderr, "Entry was not possible from specified coordinates (%d, %d)!\n", r+1, c+1);
     return -1;
   }
   return rotation;
