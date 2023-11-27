@@ -160,7 +160,7 @@ bool MapInit(Map *map, char* arg){
   char tmp;
   tmp = getc(file);
 
-  while(tmp != ' ' && tmp != '\n' && tmp!= EOF){
+  while(rows==0 || (tmp != ' ' && tmp != '\n' && tmp!= EOF)){
     while(tmp>'9'||tmp<'0')   //CAUTION
       tmp=getc(file);         //For some reason there is '-ne' at the start of the official tests, so idk this should make the map load
     rows = rows*10;           //Those tests are weird though, for some reason they also expect the program to do a double new line (maybe be CRLF issue?)
@@ -168,12 +168,11 @@ bool MapInit(Map *map, char* arg){
     tmp = getc(file);       
   }
   tmp = getc(file);
-  while(tmp != ' ' && tmp != '\n' && tmp!= EOF){
+  while(cols==0 || (tmp != ' ' && tmp != '\n' && tmp!= EOF)){
     cols = cols*10;
     cols += atoi(&tmp);
     tmp = getc(file);
   }
-
   if(!MapCtor(map, cols, rows)){
     fprintf(stderr, "Error allocating memory!\n");
     fclose(file);
