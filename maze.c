@@ -8,14 +8,6 @@ int main(int argc, char **argv){
   ParseArgs(argv, argc);
   return 0;
 }
-void MapPrint(Map *map){    //This function prints the whole map, used for debugging, remove for release
-  printf("Rows: %d\nCols: %d\n", map->rows, map->cols);
-  for(int i=0; i<(map->cols*map->rows); i++){
-    printf("%c ", map->cells[i]);
-    if((i+1)%map->cols==0)
-      printf("\n");
-  }
-}
 
 int ParseArgs(char **arguments, int argumentCount) {
   if(argumentCount<0)
@@ -37,7 +29,6 @@ int ParseArgs(char **arguments, int argumentCount) {
       Map map;
       if(!MapInit(&map, arguments[i]))
         return -1;
-      //MapPrint(&map);                           //TODO: remove; DEBUG only
       if(MapTest(&map))
         printf("Valid\n");
       else
@@ -82,7 +73,10 @@ int ParseArgs(char **arguments, int argumentCount) {
       int R = atoi(arguments[i+2]);
       int C = atoi(arguments[i+3]);
       int lr = atoi(arguments[i+4]);
-      Mazefollower(&map, R, C, 0, lr);
+      
+      int rotation = start_border(&map, R, C, lr);
+      if(rotation!=-1)
+        Mazefollower(&map, R, C, lr, rotation);
       return -2;
     }
   }
@@ -251,14 +245,11 @@ bool isborder(Map *map, int r, int c, int border){
 bool FitsInMap(Map *map, int r, int c){ //Checks whether the r and c coordinates are valid and fit in the maze defined
   if(map==NULL)
     return false;
-  if(r>=map->rows || r<0){
-    fprintf(stderr, "Invalid value of rows! Input=%d Maximum=%d\n", r, map->rows-1);
+  if(r>=map->rows || r<0)
     return false;
-  }
-  if(c>=map->cols || c<0){
-    fprintf(stderr, "Invalid value of cols! Input=%d Maximum=%d\n", c, map->cols-1);
+
+  if(c>=map->cols || c<0)
     return false;
-  }
   return true;
 }
 
@@ -286,53 +277,24 @@ int start_border(Map *map, int r, int c, int leftright){
     3=going right (entering from left)
   */
   if(c==0)                //Entering from left
-    if((map->cells[r*map->cols]&1)!=1)
+    if(!isborder(map, r, c, 1))
       rotation=3;
   if((c+1)==map->cols)    //entering from right
-    if((map->cells[r*map->cols+c]&2)!=2)
+    if(!isborder(map, r, c, 2))
       rotation=2;
   if(r==0)                //entering from top
-    if((map->cells[c]&4)!=4)
-      rotation=0;
+    if((c&1)==0)
+      if(!isborder(map, r, c, 4))
+        rotation=0;
   if((r+1)==map->rows)    //entering from bottom
-    if((map->cells[r*map->cols+c]&4)!=4)
-      rotation=1;
+    if((((r+c)%2)!=0))    /* Cell shape /\ */
+      if(!isborder(map, r, c, 4))
+        rotation=1;
   if(rotation==-1){
     fprintf(stderr, "Entry was not possible from specified coordinates (%d, %d)!\n", r, c);
     return -1;
   }
-  if(leftright==0){       //left hand rule
-    //if(((r+1)&1)==1){
-      printf("rotation: %d\n", rotation);
-    //}
-  }
-  else{                   //right hand rule
-    if(rotation==3){
-      if((r&1)==0){ //Offset by one, we start at 0 so even lines became odd, and reverse
-        printf("is border2: %d\n", isborder(map, r, c, 2)); //odd
-        printf("is border4: %d\n", isborder(map, r, c, 4));
-        printf("is border1: %d\n", isborder(map, r, c, 1));
-      }
-      else{
-        printf("is border4: %d\n", isborder(map, r, c, 4));
-        printf("is border2: %d\n", isborder(map, r, c, 2));
-        printf("is border1: %d\n", isborder(map, r, c, 1));
-      }
-      //check 2 4 1 on odd rows
-      //check 4 2 1 on even rows
-    }
-    if(rotation==2){
-      //check 4 1 2 on odd rows
-      //check 1 4 2 on even rows
-    }
-    if(rotation==0){
-      //check 1 2 4
-    }
-    if(rotation==1){
-      //check 2 1 4
-    }
-  }
-  return 0;
+  return rotation;
 }
 
 int next_rotation(Map *map, int r, int c, int leftright, int rotation){
