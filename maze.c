@@ -324,7 +324,7 @@ int next_rotation(Map *map, int r, int c, int leftright, int rotation){
 
 void Mazefollower(Map *map, int r, int c, int leftright, int rotation){
   while(FitsInMap(map, r, c)){
-    printf("%d %d\n", r+1, c+1);
+    printf("%d,%d\n", r+1, c+1);
     int wall = next_rotation(map, r, c, leftright, rotation);
     if(wall==1){
       c-=1;
