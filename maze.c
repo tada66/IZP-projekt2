@@ -5,30 +5,33 @@
 #include <stdbool.h>  //bool  
 
 int main(int argc, char **argv){
-  ParseArgs(argv, argc);
+  int parse = ParseArgs(argv, argc);
+  if(parse==-3)
+    fprintf(stderr, "Invalid argument! See --help for help\n");
+  if(parse==-2)
+    fprintf(stderr, "Too few arguments!\n");
+  if(parse==-1)
+    fprintf(stderr, "Too many arguments!\n");
+
   return 0;
 }
 
 int ParseArgs(char **arguments, int argumentCount) {
   if(argumentCount<2)
-    return 0;
+    return -2;
   bool isRight = false;
   if(strcmp("--help", arguments[1]) == 0){
-    if(argumentCount>2){
-      fprintf(stderr, "Too many arguments!\n");
-      return -1;
-    }
+    if(argumentCount>2)
+      return -1;    //Too may arguments
     PrintHelp();
     return 0;
   }
   else if (strcmp("--test", arguments[1]) == 0){
-    if(2>=argumentCount){
-      fprintf(stderr, "Not enough arguments\n");
-      return 0;
-    }
+    if(2>=argumentCount)
+      return -2;    //Too few arguments
     Map map;
     if(!MapInit(&map, arguments[2]))
-      return -1;
+      return -5;
     if(MapTest(&map))
       printf("Valid\n");
     else
@@ -42,21 +45,15 @@ int ParseArgs(char **arguments, int argumentCount) {
   else if(strcmp("--rpath", arguments[1]) == 0){
     isRight=true;
   }
-  else{
-    fprintf(stderr, "Invalid argument!\n");
-    return -1;
-  }
-  if(3>=argumentCount){
-    fprintf(stderr, "Too few arguments!\n");
-    return -1;
-  }
-  else if(5<argumentCount){
-    fprintf(stderr, "Too many arguments!\n");
-    return -1;
-  }
+  else
+    return -3;    //Invalid argument
+  if(3>=argumentCount)
+    return -2;    //Too few arguments
+  else if(5<argumentCount)
+    return -1;    //Too many arguments
   Map map;
   if(!MapInit(&map, arguments[4]))
-    return -1;
+    return -5;
   int r = atoi(arguments[2])-1;
   int c = atoi(arguments[3])-1;
   int rotation = start_border(&map, r, c, isRight);
