@@ -24,6 +24,8 @@ int main(int argc, char **argv){
           printf("Invalid\n");
         MapDtor(&map);
       }
+      else
+        printf("Invalid\n");
       return 0;
     }
     if(MapInit(&map, argv[4])){
@@ -81,8 +83,8 @@ void PrintHelp(){
   printf("Available arguments: --help, --test, --rpath, --lpath\n");
   printf("--help shows this help menu\n");
   printf("--test will check any file for a valid maze definition, return Valid or Invalid. Example usage: '--test bludiste.txt'\n");
-  printf("--rpath R C needs two arguments R, and C, which will be the coordinates for the entry point into the maze, --rpath then looks for an exit using the right hand rule\n");
-  printf("--lpath R C needs two arguments R, and C, which will be the coordinates for the entry point into the maze, --lpath then looks for an exit using the left hand rule\n");
+  printf("--rpath R C needs two coordinates - R, and C, which will be the coordinates for the entry point into the maze, then the maze definition file, --rpath then looks for an exit using the right hand rule\n");
+  printf("--lpath R C needs two coordinates - R, and C, which will be the coordinates for the entry point into the maze, then the maze definition file, --lpath then looks for an exit using the left hand rule\n");
 }
 
 bool MapTest(Map *map){                 //TODO: check if some arguments are missing
@@ -168,14 +170,16 @@ bool MapInit(Map *map, char* arg){
   tmp = getc(file);
 
   while(rows==0 || (tmp != ' ' && tmp != '\n' && tmp!= EOF)){
-    while(tmp>'9'||tmp<'0')   //CAUTION
-      tmp=getc(file);         //For some reason there is '-ne' at the start of the official tests, so idk this should make the map load
-    rows = rows*10;           //Those tests are weird though, for some reason they also expect the program to do a double new line (maybe be CRLF issue?)
+    if(tmp<'0' || tmp>'9')
+      return false;
+    rows = rows*10;
     rows += atoi(&tmp);
     tmp = getc(file);       
   }
   tmp = getc(file);
   while(cols==0 || (tmp != ' ' && tmp != '\n' && tmp!= EOF)){
+    if(tmp<'0' || tmp>'9')
+      return false;
     cols = cols*10;
     cols += atoi(&tmp);
     tmp = getc(file);
