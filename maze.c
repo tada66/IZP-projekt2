@@ -8,11 +8,40 @@ int main(int argc, char **argv){
   int parse = ParseArgs(argv, argc);
   if(parse==-3)
     fprintf(stderr, "Invalid argument! See --help for help\n");
-  if(parse==-2)
+  else if(parse==-2)
     fprintf(stderr, "Too few arguments!\n");
-  if(parse==-1)
+  else if(parse==-1)
     fprintf(stderr, "Too many arguments!\n");
-
+  else if(parse==1)
+    PrintHelp(0);
+  else{
+    Map map;
+    if(parse==2){
+      if(MapInit(&map, argv[2])){
+        if(MapTest(&map))
+          printf("Valid\n");
+        else
+          printf("Invalid\n");
+        MapDtor(&map);
+      }
+      return 0;
+    }
+    if(MapInit(&map, argv[4])){
+      int r = atoi(argv[2])-1;
+      int c = atoi(argv[3])-1;
+      bool isRight = false;
+      if(parse==4)
+        isRight=true;
+      int rotation = start_border(&map, r, c, isRight);
+      if(rotation!=-1)
+        Mazefollower(&map, r, c, isRight, rotation);
+      else{
+        MapDtor(&map);
+        return 0;
+      }
+      MapDtor(&map);
+    }
+  }
   return 0;
 }
 
@@ -23,21 +52,12 @@ int ParseArgs(char **arguments, int argumentCount) {
   if(strcmp("--help", arguments[1]) == 0){
     if(argumentCount>2)
       return -1;    //Too may arguments
-    PrintHelp();
-    return 0;
+    return 1;       //PrintHelp()
   }
   else if (strcmp("--test", arguments[1]) == 0){
     if(2>=argumentCount)
       return -2;    //Too few arguments
-    Map map;
-    if(!MapInit(&map, arguments[2]))
-      return -5;
-    if(MapTest(&map))
-      printf("Valid\n");
-    else
-      printf("Invalid\n");
-    MapDtor(&map);
-    return 1;
+    return 2;       //MapTest()
   }
   else if(strcmp("--lpath", arguments[1]) == 0){
     isRight=false;
@@ -51,20 +71,10 @@ int ParseArgs(char **arguments, int argumentCount) {
     return -2;    //Too few arguments
   else if(5<argumentCount)
     return -1;    //Too many arguments
-  Map map;
-  if(!MapInit(&map, arguments[4]))
-    return -5;
-  int r = atoi(arguments[2])-1;
-  int c = atoi(arguments[3])-1;
-  int rotation = start_border(&map, r, c, isRight);
-    if(rotation!=-1)
-      Mazefollower(&map, r, c, isRight, rotation);
-    else{
-      MapDtor(&map);
-      return 0;
-    }
-  MapDtor(&map);
-  return 1;
+  if(isRight)
+    return 4; //rpath
+  else
+    return 3; //lpath
 }
 
 void PrintHelp(){
