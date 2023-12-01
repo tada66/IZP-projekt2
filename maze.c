@@ -35,7 +35,7 @@ int main(int argc, char **argv){
     PrintHelp(0);
   else{
     Map map;
-    if(parse==2){
+    if(parse==2){   //MapTest
       if(MapInit(&map, argv[2])){
         if(MapTest(&map))
           printf("Valid\n");
@@ -177,7 +177,7 @@ void MapDtor(Map *map){
   map->rows=0;
 }
 
-bool MapInit(Map *map, char* arg){//Stores the map into memory from file
+bool MapInit(Map *map, char* arg){  //Stores the map into memory from file
   FILE *file;
   file = fopen(arg, "r");
   if(file==NULL){
@@ -189,7 +189,7 @@ bool MapInit(Map *map, char* arg){//Stores the map into memory from file
   tmp = getc(file);
 
   while(rows==0 || (tmp != ' ' && tmp != '\n' && tmp!= EOF)){
-    if(tmp<'0' || tmp>'9')
+    if((tmp != ' ' && tmp != '\n' && tmp!= EOF) && (tmp<'0' || tmp>'9'))
       return false;
     rows = rows*10;
     rows += atoi(&tmp);
@@ -197,7 +197,7 @@ bool MapInit(Map *map, char* arg){//Stores the map into memory from file
   }
   tmp = getc(file);
   while(cols==0 || (tmp != ' ' && tmp != '\n' && tmp!= EOF)){
-    if(tmp<'0' || tmp>'9')
+    if((tmp != ' ' && tmp != '\n' && tmp!= EOF) && (tmp<'0' || tmp>'9'))
       return false;
     cols = cols*10;
     cols += atoi(&tmp);
@@ -216,6 +216,10 @@ bool MapInit(Map *map, char* arg){//Stores the map into memory from file
         if(map->cells!=NULL){
           map->cells[i]=tmp;  //TODO: make check past rows*cols just in case the definition in file is too large
           i++;
+          if(i>rows*cols){
+            fclose(file);
+            return false;
+          }
         }
         else
           return false;
