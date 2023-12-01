@@ -3,12 +3,13 @@
 #include <string.h>   //strcmp
 #include <stdbool.h>  //bool  
 
-typedef struct {
+typedef struct {  //define the map
   int rows;
   int cols;
   unsigned char *cells;
 } Map;
 
+//START function prototypes
 void PrintHelp();
 int ParseArgs(char **arguments, int argumentCount);
 bool MapTest(Map *map);
@@ -20,6 +21,7 @@ int start_border(Map *map, int r, int c, int leftright);
 bool FitsInMap(Map *map, int r, int c);
 int next_rotation(Map *map, int r, int c, int leftright, int rotation);
 void Mazefollower(Map *map, int r, int c, int leftright, int rotation);
+//END function prototypes
 
 int main(int argc, char **argv){
   int parse = ParseArgs(argv, argc);
@@ -96,7 +98,7 @@ int ParseArgs(char **arguments, int argumentCount) {
     return 3; //lpath
 }
 
-void PrintHelp(){
+void PrintHelp(){  //Called on --help argument, displays the help text
   printf("Available arguments: --help, --test, --rpath, --lpath\n");
   printf("--help shows this help menu\n");
   printf("--test will check any file for a valid maze definition, return Valid or Invalid. Example usage: '--test bludiste.txt'\n");
@@ -104,7 +106,7 @@ void PrintHelp(){
   printf("--lpath R C needs two coordinates - R, and C, which will be the coordinates for the entry point into the maze, then the maze definition file, --lpath then looks for an exit using the left hand rule\n");
 }
 
-bool MapTest(Map *map){                 //TODO: check if some arguments are missing
+bool MapTest(Map *map){ //Checks for the correct definition of the maze map
   if(map->cols<1 || map->rows<1)
     return false;
   for(int i=0; i<(map->cols*map->rows); i++){
@@ -175,7 +177,7 @@ void MapDtor(Map *map){
   map->rows=0;
 }
 
-bool MapInit(Map *map, char* arg){
+bool MapInit(Map *map, char* arg){//Stores the map into memory from file
   FILE *file;
   file = fopen(arg, "r");
   if(file==NULL){
@@ -212,7 +214,7 @@ bool MapInit(Map *map, char* arg){
     while(tmp != '\n' && tmp!= EOF){
       if(tmp != ' '){
         if(map->cells!=NULL){
-          map->cells[i]=tmp;
+          map->cells[i]=tmp;  //TODO: make check past rows*cols just in case the definition in file is too large
           i++;
         }
         else
@@ -226,7 +228,7 @@ bool MapInit(Map *map, char* arg){
   return true;
 }
 
-bool isborder(Map *map, int r, int c, int border){
+bool isborder(Map *map, int r, int c, int border){//Check whether a side has a border or no, returns true on border found
   /*int border behaviour 
   4=check top/bottom border
   2=check right border
@@ -264,7 +266,7 @@ bool FitsInMap(Map *map, int r, int c){ //Checks whether the r and c coordinates
   return true;
 }
 
-int start_border(Map *map, int r, int c, int leftright){ 
+int start_border(Map *map, int r, int c, int leftright){  //Checks whether entry into maze is possible, if it is function returns the next rotation
   /*leftright = direction to go 
       0=follow lefthand rule
       1=follow righthand rule
@@ -308,7 +310,7 @@ int start_border(Map *map, int r, int c, int leftright){
   return rotation;
 }
 
-int next_rotation(Map *map, int r, int c, int leftright, int rotation){
+int next_rotation(Map *map, int r, int c, int leftright, int rotation){  //Defines which sides are checked first based on the rotation, then returns next rotation based on which sides don't have a border 
   int priority[3];
   if(rotation==0){
     priority[0] = 1;
@@ -349,7 +351,7 @@ int next_rotation(Map *map, int r, int c, int leftright, int rotation){
   return -1;
 }
 
-void Mazefollower(Map *map, int r, int c, int leftright, int rotation){
+void Mazefollower(Map *map, int r, int c, int leftright, int rotation){//  Called after start_border, iterates next_rotation until we get out of the maze
   while(FitsInMap(map, r, c)){
     printf("%d,%d\n", r+1, c+1);
     int wall = next_rotation(map, r, c, leftright, rotation);
