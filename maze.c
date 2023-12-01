@@ -66,7 +66,7 @@ int main(int argc, char **argv){
   return 0;
 }
 
-int ParseArgs(char **arguments, int argumentCount) {
+int ParseArgs(char **arguments, int argumentCount){
   if(argumentCount<2)
     return -2;
   bool isRight = false;
@@ -98,7 +98,7 @@ int ParseArgs(char **arguments, int argumentCount) {
     return 3; //lpath
 }
 
-void PrintHelp(){  //Called on --help argument, displays the help text
+void PrintHelp(){   //Called on --help argument, displays the help text
   printf("Available arguments: --help, --test, --rpath, --lpath\n");
   printf("--help shows this help menu\n");
   printf("--test will check any file for a valid maze definition, return Valid or Invalid. Example usage: '--test bludiste.txt'\n");
@@ -106,7 +106,7 @@ void PrintHelp(){  //Called on --help argument, displays the help text
   printf("--lpath R C needs two coordinates - R, and C, which will be the coordinates for the entry point into the maze, then the maze definition file, --lpath then looks for an exit using the left hand rule\n");
 }
 
-bool MapTest(Map *map){ //Checks for the correct definition of the maze map
+bool MapTest(Map *map){   //Checks for the correct definition of the maze map
   if(map->cols<1 || map->rows<1)
     return false;
   for(int i=0; i<(map->cols*map->rows); i++){
@@ -156,7 +156,7 @@ bool MapTest(Map *map){ //Checks for the correct definition of the maze map
   return true;
 }
 
-bool MapCtor(Map *map, int cols, int rows){//returns 0 upon encountering an error with allocating memory
+bool MapCtor(Map *map, int cols, int rows){   //returns 0 upon encountering an error with allocating memory
   map->cols=cols;
   map->rows=rows;
   size_t mapsize = rows*cols*sizeof(char);
@@ -170,7 +170,7 @@ bool MapCtor(Map *map, int cols, int rows){//returns 0 upon encountering an erro
   return 1;
 }
 
-void MapDtor(Map *map){
+void MapDtor(Map *map){   //Frees the map from memory
   free(map->cells);
   map->cells=NULL;
   map->cols=0;
@@ -232,7 +232,7 @@ bool MapInit(Map *map, char* arg){  //Stores the map into memory from file
   return true;
 }
 
-bool isborder(Map *map, int r, int c, int border){//Check whether a side has a border or no, returns true on border found
+bool isborder(Map *map, int r, int c, int border){    //Check whether a side has a border or no, returns true on border found
   /*int border behaviour 
   4=check top/bottom border
   2=check right border
@@ -259,7 +259,7 @@ bool isborder(Map *map, int r, int c, int border){//Check whether a side has a b
   return false;
 }
 
-bool FitsInMap(Map *map, int r, int c){ //Checks whether the r and c coordinates are valid and fit in the maze defined
+bool FitsInMap(Map *map, int r, int c){   //Checks whether the r and c coordinates are valid and fit in the maze defined
   if(map==NULL)
     return false;
   if(r>=map->rows || r<0)
@@ -355,7 +355,7 @@ int next_rotation(Map *map, int r, int c, int leftright, int rotation){  //Defin
   return -1;
 }
 
-void Mazefollower(Map *map, int r, int c, int leftright, int rotation){//  Called after start_border, iterates next_rotation until we get out of the maze
+void Mazefollower(Map *map, int r, int c, int leftright, int rotation){   //Called after start_border, iterates next_rotation until we get out of the maze
   while(FitsInMap(map, r, c)){
     printf("%d,%d\n", r+1, c+1);
     int wall = next_rotation(map, r, c, leftright, rotation);
