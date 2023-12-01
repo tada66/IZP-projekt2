@@ -3,7 +3,7 @@
 #include <string.h>   //strcmp
 #include <stdbool.h>  //bool  
 
-typedef struct {  //define the map
+typedef struct {    //define the map
   int rows;
   int cols;
   unsigned char *cells;
@@ -189,7 +189,7 @@ bool MapInit(Map *map, char* arg){  //Stores the map into memory from file
   tmp = getc(file);
 
   while(rows==0 || (tmp != ' ' && tmp != '\n' && tmp!= EOF)){
-    if((tmp != ' ' && tmp != '\n' && tmp!= EOF) && (tmp<'0' || tmp>'9'))
+    if((tmp != ' ' && tmp != '\n') && (tmp<'0' || tmp>'9'))    //If char isn't a whitespace and isn't a number return error
       return false;
     rows = rows*10;
     rows += atoi(&tmp);
@@ -197,7 +197,7 @@ bool MapInit(Map *map, char* arg){  //Stores the map into memory from file
   }
   tmp = getc(file);
   while(cols==0 || (tmp != ' ' && tmp != '\n' && tmp!= EOF)){
-    if((tmp != ' ' && tmp != '\n' && tmp!= EOF) && (tmp<'0' || tmp>'9'))
+    if((tmp != ' ' && tmp != '\n') && (tmp<'0' || tmp>'9'))   //If char isn't a whitespace and isn't a number return error
       return false;
     cols = cols*10;
     cols += atoi(&tmp);
