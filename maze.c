@@ -88,7 +88,7 @@ int ParseArgs(char **arguments, int argumentCount){
   }
   else
     return -3;    //Invalid argument
-  if(3>=argumentCount)
+  if(4>=argumentCount)
     return -2;    //Too few arguments
   else if(5<argumentCount)
     return -1;    //Too many arguments
