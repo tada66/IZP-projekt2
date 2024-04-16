@@ -1,4 +1,5 @@
-# IZP 2nd project
+# IZP 2. projekt; Hodnoceno 12/14b
+Detailní hodnocení na konci README.md
 
 # Popis projektu
 Vytvořte program, který v daném bludišti a jeho vstupu najde průchod ven. Bludiště je uloženo v textovém souboru ve formě obdélníkové matice celých čísel. Cílem programu je výpis souřadnic políček bludiště, přes které vede cesta z vchodu bludiště do jeho východu.
@@ -8,8 +9,9 @@ Vytvořte program, který v daném bludišti a jeho vstupu najde průchod ven. B
 Odevzdání: Program implementujte ve zdrojovém souboru maze.c. Zdrojový soubor odevzdejte prostřednictvím informačního systému.
 
 Překlad: Pro vyzkoušení překládejte program s následujícími argumenty
-
+```
 $ gcc -std=c11 -Wall -Wextra -Werror maze.c -o maze
+```
 ## Syntax spuštění
 Program se spouští v následující podobě:
 
@@ -45,12 +47,13 @@ Cesta bude tištěna jako posloupnost souřadnic políček, přes které cesta v
 
 ## 1. podúkol
 Mapu implementujte pomocí dvojrozměrného pole s využitím následujícího datového typu:
-
+```
 typedef struct {
   int rows;
   int cols;
   unsigned char *cells;
 } Map;
+```
 kde rows je počet řádků, cols je počet sloupců a cells je ukazatel na pole buňek (celkem rows*cols buněk) - řádky jsou v paměti uloženy za sebou, každý řádek je pole jeho buňek. Buňka je typu unsigned char. Implementujte podpůrné funkce tohoto typu (inicializace mapy, načtení mapy, uvolnění mapy).
 
 ## 2. podúkol
@@ -79,105 +82,110 @@ Přirozeně a obdobně pro hledání pomocí pravidla levé ruky (u daných př�
 Průchod trojúhelníkovým bludištěm
 Nechť je mapa vyobrazená v předcházejícím obrázku uložena v souboru bludiste.txt s následujícím obsahem (plné hrany na obrázku značí stěnu, čárkované volný prostor):
 
-6 7
+6 7\
 1 4 4 2 5 0 6\
 1 4 4 0 4 0 2\
 1 0 4 0 4 6 1\
 1 2 7 1 0 4 2\
 3 1 4 2 3 1 2\
-4 2 5 0 4 2 5\
+4 2 5 0 4 2 5
+
 Příklad nalezení cesty pravidlem levé ruky (na obrázku zobrazená červenou křivkou):
-
-$ ./maze --lpath 6 1 bludiste.txt\
-6,1\
-6,2\
-5,2\
-5,3\
-5,4\
-6,4\
-6,5\
-6,6\
-5,6\
-5,7\
-4,7\
-4,6\
-4,5\
-5,5\
-4,5\
-4,4\
-3,4\
-3,3\
-3,2\
-4,2\
-4,1\
-5,1\
-4,1\
-4,2\
-3,2\
-3,1\
-2,1\
-2,2\
-2,3\
-2,4\
-1,4\
-1,3\
-1,2\
-1,1\
-\
-$ ./maze --lpath 6 7 bludiste.txt
-6,7
-Příklad nalezení cesty pravidlem pravé ruky (na obrázku zobrazená modrou křivkou):
-
-$ ./maze --rpath 6 1 bludiste.txt\
-6,1\
-6,2\
-5,2\
-5,3\
-5,4\
-6,4\
-6,3\
-6,4\
-6,5\
-6,6\
-5,6\
-5,7\
-4,7\
-4,6\
-4,5\
-4,4\
-3,4\
-3,5\
-3,6\
-3,5\
-3,4\
-3,3\
-3,2\
-3,1\
-2,1\
-2,2\
-2,3\
-2,4\
-2,5\
-2,6\
-2,7\
-3,7\
-\
-$ ./maze --rpath 6 7 bludiste.txt\
-6,7
-
-Prémiový příklad nalezení nejkratší cesty:
-
-$ ./maze --shortest 3 7 bludiste.txt\
-3,7\
-2,7\
-2,6\
-2,5\
-2,4\
-1,4\
-1,3\
-1,2\
+```
+$ ./maze --lpath 6 1 bludiste.txt
+6,1
+6,2
+5,2
+5,3
+5,4
+6,4
+6,5
+6,6
+5,6
+5,7
+4,7
+4,6
+4,5
+5,5
+4,5
+4,4
+3,4
+3,3
+3,2
+4,2
+4,1
+5,1
+4,1
+4,2
+3,2
+3,1
+2,1
+2,2
+2,3
+2,4
+1,4
+1,3
+1,2
 1,1
 
+```
+```
+$ ./maze --lpath 6 7 bludiste.txt
+6,7
+```
+Příklad nalezení cesty pravidlem pravé ruky (na obrázku zobrazená modrou křivkou):
+```
+$ ./maze --rpath 6 1 bludiste.txt
+6,1
+6,2
+5,2
+5,3
+5,4
+6,4
+6,3
+6,4
+6,5
+6,6
+5,6
+5,7
+4,7
+4,6
+4,5
+4,4
+3,4
+3,5
+3,6
+3,5
+3,4
+3,3
+3,2
+3,1
+2,1
+2,2
+2,3
+2,4
+2,5
+2,6
+2,7
+3,7
+```
+```
+$ ./maze --rpath 6 7 bludiste.txt
+6,7
+```
+Prémiový příklad nalezení nejkratší cesty:
+```
+$ ./maze --shortest 3 7 bludiste.txt
+3,7
+2,7
+2,6
+2,5
+2,4
+1,4
+1,3
+1,2
+1,1
+```
 
 # Ověření vstupů a výstupů
 Skript maze-test.sh slouží k vašemu ověření, zda váš program funguje správně na základních příkladech. Pozitivní výsledek testovacího skriptu nezaručuje žádné bodové hodnocení. Soubor se skriptem si stáhněte do stejné složky se zdrojovým kódem maze.c a spusťte pomocí sh. Detailní instrukce k použití jsou v komentáři uvnitř skriptu.
@@ -218,6 +226,69 @@ správné řešení neočekávaných stavů.
 # Prémiové hodnocení
 V případě implementace hledání nejkratší cesty z bludiště je možné získat 1-4 prémiové body. Získání prémiových bodů je podmíněno správnou implementací algoritmů hledání pomocí pravidla pravé a levé ruky a dodržením implementačních detailů.
 
-
 Naposledy změněno: čtvrtek, 23. listopadu 2023, 13.49
+
+# Hodnocení 
+```
+12: celkem bodu
+
+====== Prehled hodnoceni ==========
+7: obhajoba ok
+-1:magicke konstanty
+0.8:ok: test validniho bludiste
+0.8:ok: test spatneho bludiste
+1.0:ok: test lpath na malem bludisti
+1.0:ok: test lpath na vetsim bludisti
+0.1:ok: test lpath na jedinem ohranicenem policku
+1.0:ok: test rpath na malem bludisti
+1.0:ok: test rpath na vetsim bludisti
+0.1:ok: test rpath na jedinem ohranicenem policku
+0.05:ok: reakce na napovedu
+0.05:ok: reakce na stderr kvuli zadnym argumentum
+0.05:ok: reakce na stderr na chybejici jmeno souboru (lpath)
+0.05:ok: reakce na stderr na chybejici jmeno souboru (rpath)
+0.5:ok: reakce na stderr na nepovedeny fopen
+0.5:ok: reakce na stderr na nepovedenou alokaci
+-1:chyba: pametove chyby
+
+====== Log z prekladu =============
+Ok
+
+====== Analyza kodu ===============
+Ok
+
+====== Log z jednotlivych testu ===
+0.8:ok: test validniho bludiste
+0.8:ok: test spatneho bludiste
+1.0:ok: test lpath na malem bludisti
+1.0:ok: test lpath na vetsim bludisti
+0.1:ok: test lpath na jedinem ohranicenem policku
+1.0:ok: test rpath na malem bludisti
+1.0:ok: test rpath na vetsim bludisti
+0.1:ok: test rpath na jedinem ohranicenem policku
+0.05:ok: reakce na napovedu
+# Available arguments: --help, --test, --rpath, --lpath
+# --help shows this help menu
+# --test will check any file for a valid maze definition, return Valid or Invalid. Example usage: '--test bludiste.txt'
+# --rpath R C needs two coordinates - R, and C, which will be the coordinates for the entry point into the maze, then the maze definition file, --rpath then looks for an exit using the right hand rule
+# --lpath R C needs two coordinates - R, and C, which will be the coordinates for the entry point into the maze, then the maze definition file, --lpath then looks for an exit using the left hand rule
+0.05:ok: reakce na stderr kvuli zadnym argumentum
+# Too few arguments!
+0.05:ok: reakce na stderr na chybejici jmeno souboru (lpath)
+# Error loading file (null)! Does it exist?
+0.05:ok: reakce na stderr na chybejici jmeno souboru (rpath)
+# Error loading file (null)! Does it exist?
+0.5:ok: reakce na stderr na nepovedeny fopen
+# Error loading file permdenied.txt! Does it exist?
+0.5:ok: reakce na stderr na nepovedenou alokaci
+# Error allocating memory!
+-1:chyba: pametove chyby
+# test_errargs1.valgrind:==184092== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+# test_errargs2.valgrind:==184097== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+====== Uprava kodu vyucujicim ======
+#
+```
+
+
 
